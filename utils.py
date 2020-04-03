@@ -15,10 +15,17 @@ HEADERS_CSV = (
 headers_csv = HEADERS_CSV
 
 
-def get_html(url: str, product_name='xiaomi', max_price=None, min_price=None, page=1):
+def get_html(url: str, product_name=None, max_price=None, min_price=None, page=None):
     """
     Функция создает подключение к серверу по полученному url и параметрам переданными в params,
     и возвращает responce.text.
+
+    : param url: Ссылка для подключения к указанному ресурсу
+    : param product_name: Имя продукта которое
+    : param max_price: Максимальная цена, которая будет отображенна в поиске.
+    : param min_price: Минимальная цена, если указана max_price и min_price, то поиск производится в этом диапазоне цен.
+    : param page: Номер страницы, на которую будет произведет переход.
+
     timeout=5 сек, при следующих подключениях, если идет парсинг более 1-ой страницы.
     В случает ошибки сервера возвращает False и пишет в логи.
     """
@@ -35,7 +42,8 @@ def get_html(url: str, product_name='xiaomi', max_price=None, min_price=None, pa
     }
 
     try:
-        responce = requests.get(url, params=params, headers=headers, timeout=5)
+        session = requests.session()
+        responce = session.get(url, params=params, headers=headers, timeout=5)
         if responce.url == 'https://www.avito.ru/blocked':
             logging.info('IP temporarily blocked')
 
@@ -57,9 +65,7 @@ def writing_in_csv(parser_page_data):
     with open('parser_avito.csv', 'w', newline='', encoding='utf-8') as data_parser:
         writer = csv.DictWriter(data_parser, headers_csv, delimiter=',')
         writer.writeheader()
-        for datas_page in parser_page_data:
-            for data in datas_page:
-                writer.writerow(data)
+        [writer.writerow(data) for datas_page in parser_page_data for data in datas_page]
 
 
 if __name__ == "__main__":
