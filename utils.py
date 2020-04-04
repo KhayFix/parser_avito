@@ -20,8 +20,8 @@ def get_html(url: str, product_name=None, max_price=None, min_price=None, page=N
     Функция создает подключение к серверу по полученному url и параметрам переданными в params,
     и возвращает responce.text.
 
-    : param url: Ссылка для подключения к указанному ресурсу
-    : param product_name: Имя продукта которое
+    : param url: Ссылка для подключения к указанному ресурсу.
+    : param product_name: Название товара(марка) которое будет парситися.
     : param max_price: Максимальная цена, которая будет отображенна в поиске.
     : param min_price: Минимальная цена, если указана max_price и min_price, то поиск производится в этом диапазоне цен.
     : param page: Номер страницы, на которую будет произведет переход.
@@ -42,13 +42,13 @@ def get_html(url: str, product_name=None, max_price=None, min_price=None, page=N
     }
 
     try:
-        session = requests.session()
-        responce = session.get(url, params=params, headers=headers, timeout=5)
+        with requests.Session() as session:
+            responce = session.get(url, params=params, headers=headers, timeout=5)
         if responce.url == 'https://www.avito.ru/blocked':
             logging.info('IP temporarily blocked')
 
         responce.raise_for_status()
-        logging.info(f'response from server : {responce}')
+        logging.info(f'response from server : {responce} {responce.url}')
         return responce.text
     except (requests.RequestException, requests.exceptions.HTTPError, ValueError) as errors:
         logging.error(f'Network error: ERROR - {errors}')
