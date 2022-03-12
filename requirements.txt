@@ -7,5 +7,5 @@ requests==2.23.0
 soupsieve==2.0
 urllib3==1.25.8
 selenium==3.141.0
-Pillow==7.1.1
+Pillow==9.0.1
 pytesseract==0.3.3
